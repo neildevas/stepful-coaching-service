@@ -6,16 +6,20 @@ import {
   UnauthorizedError,
   ValidationError,
 } from "../utils/ApiError";
+import Student from "../models/Student";
+import Coach from "../models/Coach";
 
 //Yup is a JavaScript schema builder for value parsing and validation.
 
 let userController = {
   add: async (req, res, next) => {
     try {
+      // TODO - should take in the signup type to determine whether they are signing up as a student or coach
       const schema = Yup.object().shape({
         name: Yup.string().required(),
         email: Yup.string().email().required(),
         password: Yup.string().required().min(6),
+        type: Yup.string().required().oneOf(['student', 'coach'])
       });
 
       if (!(await schema.isValid(req.body))) throw new ValidationError();
@@ -28,8 +32,21 @@ let userController = {
 
       if (userExists) throw new BadRequestError();
 
-      const user = await User.create(req.body);
-
+      // TODO - would be better to put this in a transaction in case an operation fails.
+      let user = await User.create(req.body);
+      let studentProfile = null;
+      let coachProfile = null;
+      if (req.body.type === 'student') {
+        studentProfile = await Student.create({ user_id: user.id });
+        // create a student
+      } else if (req.body.type === 'coach') {
+        coachProfile = await Coach.create({ user_id: user.id });
+      }
+      const toInclude = studentProfile ? Student : Coach;
+      user = await User.findOne({
+        where: { id: user.id },
+        include: toInclude,
+      })
       return res.status(200).json(user);
     } catch (error) {
       next(error);

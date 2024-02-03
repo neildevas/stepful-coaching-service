@@ -6,7 +6,12 @@
   "author": "gadfaria <gadfaria@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon src/index.js",
+    "db:drop": "yarn sequelize db:drop",
+    "db:create": "yarn sequelize db:create",
+    "db:migrate": "yarn sequelize db:migrate",
+    "db:migrate:undo": "yarn sequelize db:migrate:undo",
+    "start": "yarn dev"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.310.0",
