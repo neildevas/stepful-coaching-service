@@ -2,6 +2,8 @@ import express from "express";
 import bodyParser from "body-parser";
 import globalErrorHandler from "../middlewares/errorHandler.middleware";
 import { userRoutes } from "../routes/user.routes";
+import cors from 'cors';
+
 /*
   body-parser: Parse incoming request bodies in a middleware before your handlers,
   available under the req.body property.
@@ -13,6 +15,7 @@ const expressService = {
   init: async () => {
     try {
       server = express();
+      server.use(cors());
       server.use(bodyParser.json());
       server.use('/users', userRoutes);
       server.use(globalErrorHandler);

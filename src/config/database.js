@@ -1,6 +1,6 @@
-import 'dotenv/config';
+require('dotenv/config');
 
-const config = {
+module.exports = {
   dialect: process.env.DB_DIALECT,
   host: process.env.DB_HOST,
   username: process.env.DB_USER,
@@ -14,5 +14,3 @@ const config = {
     deletedAt: 'deleted_at'
   },
 }
-
-export default config;

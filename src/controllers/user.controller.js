@@ -21,9 +21,8 @@ let userController = {
         password: Yup.string().required().min(6),
         type: Yup.string().required().oneOf(['student', 'coach'])
       });
-
+      console.log('REQ.BODY', req.body);
       if (!(await schema.isValid(req.body))) throw new ValidationError();
-
       const { email } = req.body;
 
       const userExists = await User.findOne({
@@ -49,6 +48,7 @@ let userController = {
       })
       return res.status(200).json(user);
     } catch (error) {
+      console.log('CAUGHT ERROR', error);
       next(error);
     }
   },

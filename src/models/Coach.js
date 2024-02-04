@@ -19,6 +19,7 @@ class Coach extends Model {
       as: 'Coach',
       foreignKey: "user_id",
     });
+    this.hasMany(models.Appointment, { foreignKey: 'coach_id' })
   }
 }
 
