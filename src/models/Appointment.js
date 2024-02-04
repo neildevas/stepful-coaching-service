@@ -4,10 +4,11 @@ class Appointment extends Model {
   static init(sequelize) {
     super.init(
       {
-        name: Sequelize.STRING,
-        email: Sequelize.STRING,
-        password: Sequelize.VIRTUAL, //When it is VIRTUAL it does not exist in the database
-        password_hash: Sequelize.STRING,
+        student_satisfaction_rating: Sequelize.INTEGER,
+        notes: Sequelize.STRING,
+        start_time: Sequelize.DATE,
+        end_time: Sequelize.DATE,
+        status: Sequelize.ENUM('inactive', 'active', 'ended')
       },
       {
         sequelize,

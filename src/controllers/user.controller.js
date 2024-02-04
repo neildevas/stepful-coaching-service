@@ -48,7 +48,6 @@ let userController = {
       })
       return res.status(200).json(user);
     } catch (error) {
-      console.log('CAUGHT ERROR', error);
       next(error);
     }
   },

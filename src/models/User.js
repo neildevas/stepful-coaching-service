@@ -30,9 +30,11 @@ class User extends Model {
 
   static associate(models) {
     this.hasOne(models.Student, {
+      as: 'Student',
       foreignKey: 'user_id',
     });
     this.hasOne(models.Coach, {
+      as: 'Coach',
       foreignKey: 'user_id',
     });
   }

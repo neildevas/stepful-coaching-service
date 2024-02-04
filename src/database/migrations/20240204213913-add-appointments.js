@@ -12,7 +12,7 @@ module.exports = {
       },
       student_id: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
         references: {
           model: 'students',
           key: 'id'

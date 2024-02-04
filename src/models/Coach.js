@@ -16,7 +16,7 @@ class Coach extends Model {
 
   static associate(models) {
     this.belongsTo(models.User, {
-      as: 'Coach',
+      as: 'User',
       foreignKey: "user_id",
     });
     this.hasMany(models.Appointment, { foreignKey: 'coach_id' })
