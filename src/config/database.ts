@@ -1,6 +1,6 @@
-require('dotenv/config');
+import 'dotenv/config';
 
-module.exports = {
+const config = {
   dialect: process.env.DB_DIALECT,
   host: process.env.DB_HOST,
   username: process.env.DB_USER,
@@ -13,5 +13,6 @@ module.exports = {
     updatedAt: 'updated_at',
     deletedAt: 'deleted_at'
   },
-};
+}
 
+export default config;
