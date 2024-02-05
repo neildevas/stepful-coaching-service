@@ -4,11 +4,10 @@ import User from "../models/User";
 import moment from 'moment';
 import {
   BadRequestError,
-  UnauthorizedError,
-  ValidationError,
 } from "../utils/ApiError";
 
 let appointmentController = {
+  // Used by a coach to create an appointment
   createAppointment: async (req, res, next) => {
     try {
       const { coach_id, start_time } = req.body;
@@ -22,9 +21,10 @@ let appointmentController = {
       next(err);
     }
   },
+  // Used by student to view appts available to book
   getAvailableAppointments: async (req, res, next) => {
     // gets all appointments that haven't been booked and aren't active or ended
-    // Haven't taken into account future start times
+    // TODO - filter by start time
     try {
       const availableAppointments = await Appointment.findAll({
         where: {
@@ -47,11 +47,29 @@ let appointmentController = {
     }
 
   },
+  // Used by student to book an appointment
   bookAppointment: async (req, res, next) => {
+    try {
+      // Ideally we would ensure that this user has no overlapping appointments before booking him
+      const { student_id } = req.body;
+      if (!student_id) throw new BadRequestError('student_id required');
+      // First ensure that the appointment is valid to be booked
+      const appointment = await Appointment.findByPk(req.params.id);
+      if (!appointment) throw new Error('Could not find appointment');
+      if (appointment.status !== 'inactive' || appointment.student_id !== null) {
+        throw new Error('You cannot book this appointment');
+      }
+      await appointment.update({ student_id });
+      res.status(200).json(appointment);
+    } catch (err) {
+      next(err);
+    }
 
   },
+  // Used by coach to change status, write notes, add student rating
   editAppointment: async (req, res, next) => {
     try {
+      // Ideally we'd do validation on the appointment to edit here
       const { status, notes, student_satisfaction_rating } = req.body;
       const updates = {};
       if (status) {
@@ -69,11 +87,10 @@ let appointmentController = {
         }
         updates.student_satisfaction_rating = student_satisfaction_rating;
       }
-      await Appointment.update(updates, {
-        where: { id: req.params.id }
-      });
-      const updatedAppointment = await Appointment.findByPk(req.params.id);
-      res.status(200).json(updatedAppointment);
+      const appointment = await Appointment.findByPk(req.params.id);
+      if (!appointment) throw new Error('Could not find appointment');
+     await appointment.update(updates);
+     res.status(200).json(appointment);
     } catch (err) {
       next(err);
     }

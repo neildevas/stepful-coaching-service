@@ -41,11 +41,12 @@ let userController = {
       } else if (req.body.type === 'coach') {
         coachProfile = await Coach.create({ user_id: user.id });
       }
-      const toInclude = studentProfile ? Student : Coach;
+      const toInclude = studentProfile ? [{ model: Student, as: 'Student' }] : [{ model: Coach, as: 'Coach' }];
       user = await User.findOne({
         where: { id: user.id },
         include: toInclude,
-      })
+      });
+      user.userType = studentProfile ? 'student' : 'coach' // used on the UI to distinguish between student and coach
       return res.status(200).json(user);
     } catch (error) {
       next(error);
@@ -85,8 +86,15 @@ let userController = {
 
   get: async (req, res, next) => {
     try {
-      const users = await User.findAll();
-
+      const users = await User.findAll({
+        include: [{
+          model: Student,
+          as: 'Student'
+        }, {
+          model: Coach,
+          as: 'Coach'
+        }]
+      });
       return res.status(200).json(users);
     } catch (error) {
       next(error);
@@ -96,7 +104,7 @@ let userController = {
   find: async (req, res, next) => {
     try {
       const { id } = req.params;
-      const user = await User.findByPk(id);
+      const user = await User.findByPk(id, { include: [{ model: Coach, as: 'Coach' }, { model: Student, as: 'Student'}] });
 
       if (!user) throw new BadRequestError();
 

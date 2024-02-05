@@ -1,27 +1,29 @@
 import Appointment from "../models/Appointment";
-import Coach from "../models/Coach";
+import Student from "../models/Student";
 import User from "../models/User";
 
-let studentController = {
-  // Used by a student to get all their appointments
+const coachController = {
   getAppointments: async (req, res, next) => {
     try {
       const appointments = await Appointment.findAll({
-        where: { student_id: req.params.id },
+        where: {
+          coach_id: req.params.id,
+        },
         include: [{
-          model: Coach,
-          as: 'Coach',
+          model: Student,
+          as: 'Student',
           include: [{
             model: User,
             as: 'User',
-            attributes: ['name', 'email']
+            attributes: ['id', 'name', 'email']
           }]
         }]
       });
-      return res.status(200).json(appointments);
+      res.status(200).json(appointments);
     } catch (err) {
       next(err);
     }
   }
-}
-export default studentController;
+};
+
+export default coachController;
